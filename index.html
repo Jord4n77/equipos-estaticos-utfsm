@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Gestión local de inspección e integridad de equipos estáticos.">
+  <title>Integra | Integridad mecánica</title>
+  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="https://pyscript.net/releases/2024.5.1/core.css">
+  <script type="module" src="https://pyscript.net/releases/2024.5.1/core.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="UTFSM, inicio">
+      <span class="brand-mark">
+        <img src="./logo-usm.png" alt="Escudo USM">
+      </span>
+    </a>
+    <div class="project-title"><span class="project-kicker">PROYECTO</span><strong>Mantenimiento a equipos estáticos</strong></div>
+    <div class="topbar-right">
+      <span class="local-badge"><span></span> Datos locales</span>
+    </div>
+  </header>
+
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Navegación principal">
+      <p class="side-label">GESTIÓN</p>
+      <nav class="nav-list">
+        <button class="nav-button active" data-view="dashboard"><svg class="nav-icon icon-dashboard" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><path d="M15 20.5v-3m3 3v-5m3 5v-8"/></svg> Panel general</button>
+        <button class="nav-button" data-view="equipment"><svg class="nav-icon icon-equipment" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3.5v2m8-2v2M7 5.5h10a3 3 0 0 1 3 3v8a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4v-8a3 3 0 0 1 3-3Z"/><path d="M4 10.5h16M9 14h6m-3-3.5v7m0 0-2-2m2 2 2-2"/></svg> Equipos</button>
+        <button class="nav-button" data-view="schematic"><svg class="nav-icon icon-schematic" viewBox="0 0 24 24" aria-hidden="true"><path d="m3.5 7 8.5-4 8.5 4v10L12 21l-8.5-4zM3.5 7 12 11l8.5-4M12 11v10"/><circle cx="12" cy="11" r="3.1"/><path d="M12 5.7v2.2m0 6.2v2.2m-5.3-5.3h2.2m6.2 0h2.2"/></svg> Esquema y CML</button>
+        <button class="nav-button" data-view="measurements"><svg class="nav-icon icon-measurements" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 4v16.5H21"/><path d="m6 15 4-4 3 2 6-7"/><circle cx="6" cy="15" r="1"/><circle cx="10" cy="11" r="1"/><circle cx="13" cy="13" r="1"/><circle cx="19" cy="6" r="1"/></svg> Mediciones</button>
+        <button class="nav-button" data-view="rbi"><svg class="nav-icon icon-rbi" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2.8 8 3v5.5c0 5.1-3.2 8.6-8 10.9-4.8-2.3-8-5.8-8-10.9V5.8z"/><path d="M8 8h2.5v2.5H8zm5.5 0H16v2.5h-2.5zM8 13.5h2.5V16H8zm5.5 0H16V16h-2.5z"/></svg> Evaluación RBI</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <p class="side-label">PROYECTO</p>
+        <button class="nav-button" data-view="project"><span class="nav-icon">⚙</span> Datos y respaldo</button>
+        <div class="sidebar-note">Versión demostrativa<br>Sin conexión a servidor</div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <div id="app-message" class="message-bar" role="status" aria-live="polite" hidden></div>
+
+      <section id="view-dashboard" class="view-section">
+        <div class="page-heading">
+          <div><p class="eyebrow">RESUMEN DE ACTIVOS</p><h1 class="page-title"><svg class="view-symbol icon-dashboard" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><path d="M15 20.5v-3m3 3v-5m3 5v-8"/></svg><span>Panel general</span></h1><p class="subheading">Estado de inspección e integridad de los equipos registrados.</p></div>
+          <button class="button button-primary" data-go="equipment">＋ Registrar equipo</button>
+        </div>
+        <div class="filter-row">
+          <label>Familia<select id="filter-family"><option value="">Todas las familias</option><option value="pipe">Tuberías</option><option value="vessel">Recipientes</option><option value="tank">Tanques</option></select></label>
+          <label>Ubicación técnica<input id="filter-location" type="search" placeholder="Filtrar ubicación"></label>
+          <label>Condición<select id="filter-condition"><option value="">Todas las condiciones</option><option value="normal">Normal</option><option value="alert">Alerta</option><option value="critical">Crítico</option><option value="overdue">Inspección vencida</option><option value="insufficient">Datos insuficientes</option></select></label>
+        </div>
+        <div id="summary-cards" class="summary-grid"></div>
+        <section class="panel">
+          <div class="panel-heading"><div><h2>Equipos monitoreados</h2><p>Seleccione un activo para revisar su información y mediciones.</p></div><span id="asset-count" class="count-label"></span></div>
+          <div class="table-wrap"><table><thead><tr><th>Identificación</th><th>Familia</th><th>Ubicación técnica</th><th>Espesor mínimo</th><th>Condición</th><th></th></tr></thead><tbody id="equipment-table"></tbody></table></div>
+        </section>
+      </section>
+
+      <section id="view-equipment" class="view-section" hidden>
+        <div class="page-heading"><div><p class="eyebrow">REGISTRO DE ACTIVOS</p><h1 class="page-title"><svg class="view-symbol icon-equipment" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3.5v2m8-2v2M7 5.5h10a3 3 0 0 1 3 3v8a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4v-8a3 3 0 0 1 3-3Z"/><path d="M4 10.5h16M9 14h6m-3-3.5v7m0 0-2-2m2 2 2-2"/></svg><span>Equipos</span></h1><p class="subheading">Edite los datos de diseño o cree un registro local.</p></div><button id="new-equipment" class="button button-primary">＋ Nuevo equipo</button></div>
+        <div class="content-grid">
+          <section class="panel"><div class="panel-heading"><div><h2>Ficha del equipo</h2><p>Las unidades se indican junto a cada campo.</p></div></div>
+            <form id="equipment-form" class="form-grid">
+              <label class="span-2">Equipo existente<select id="equipment-select"></select></label>
+              <label>Identificación<input id="equipment-name" required maxlength="80"></label>
+              <label>Ubicación técnica<input id="equipment-location" required maxlength="100"></label>
+              <label class="span-2">Material / especificación<input id="equipment-material" maxlength="80" placeholder="p. ej., ASTM A106 Gr. B"></label>
+              <label class="span-2">Familia<select id="equipment-family"><option value="pipe">Tubería de proceso</option><option value="vessel">Recipiente a presión</option><option value="tank">Tanque atmosférico</option></select></label>
+              <label>Presión de diseño (MPa)<input data-field="design_pressure_mpa" type="number" step="any"></label>
+              <label>Diámetro exterior (mm)<input data-field="outside_diameter_mm" type="number" step="any"></label>
+              <label>Radio interior (mm)<input data-field="inside_radius_mm" type="number" step="any"></label>
+              <label>Tensión admisible, S (MPa)<input data-field="allowable_stress_mpa" type="number" step="any"></label>
+              <label>Eficiencia de junta, E<input data-field="weld_efficiency" type="number" step="any"></label>
+              <label>Factor de reducción, W<input data-field="weld_strength_reduction" type="number" step="any"></label>
+              <label>Coeficiente, Y<input data-field="coefficient_y" type="number" step="any"></label>
+              <label>Diámetro del tanque, D (m)<input data-field="tank_diameter_m" type="number" step="any"></label>
+              <label>Altura de líquido, H (m)<input data-field="liquid_height_m" type="number" step="any"></label>
+              <label>Gravedad específica, G<input data-field="specific_gravity" type="number" step="any"></label>
+              <label>Espesor nominal (mm)<input data-field="nominal_thickness_mm" type="number" step="any"></label>
+              <label>Tolerancia fabricación (fracción)<input data-field="mill_tolerance_fraction" type="number" step="any"></label>
+              <label>Sobre-espesor CA (mm)<input data-field="corrosion_allowance_mm" type="number" step="any"></label>
+              <label>Clase tubería, máximo intervalo (años)<input data-field="inspection_class_max_years" type="number" step="any"></label>
+              <div class="span-2 form-actions"><button class="button button-primary" type="submit">Guardar equipo</button><span class="help-text">Luego agregue puntos CML/TML en Esquema y registre sus campañas UT.</span></div>
+            </form>
+          </section>
+          <aside class="panel note-panel"><h2>Base de diseño</h2><p id="equipment-design-summary">Seleccione un equipo para ver la ecuación y sus parámetros calculados.</p></aside>
+        </div>
+      </section>
+
+      <section id="view-schematic" class="view-section" hidden>
+        <div class="page-heading"><div><p class="eyebrow">LOCALIZACIÓN DE MEDICIONES</p><h1 class="page-title"><svg class="view-symbol icon-schematic" viewBox="0 0 24 24" aria-hidden="true"><path d="m3.5 7 8.5-4 8.5 4v10L12 21l-8.5-4zM3.5 7 12 11l8.5-4M12 11v10"/><circle cx="12" cy="11" r="3.1"/><path d="M12 5.7v2.2m0 6.2v2.2m-5.3-5.3h2.2m6.2 0h2.2"/></svg><span>Esquema técnico y CML/TML</span></h1><p class="subheading">Marcadores relativos (X/Y %) asociados a los puntos de monitoreo.</p></div><label class="compact-label">Equipo<select id="schematic-equipment"></select></label></div>
+        <div class="content-grid schematic-grid">
+          <section class="panel"><div class="panel-heading"><div><h2 id="schematic-title">Esquema</h2><p>Plano técnico ilustrativo, no apto para fabricación.</p></div><div class="schematic-tools"><span class="legend"><i class="legend-dot green"></i> Normal <i class="legend-dot amber"></i> Alerta <i class="legend-dot red"></i> Crítico</span><label class="button button-secondary schematic-upload">Cargar PNG/JPG<input id="schematic-image-upload" type="file" accept="image/png,image/jpeg,.png,.jpg,.jpeg" hidden></label><button id="schematic-generated" class="button button-secondary schematic-generated">Plano técnico</button></div></div><div id="schematic-canvas" class="schematic-canvas"></div></section>
+          <section class="panel"><div class="panel-heading"><div><h2>Puntos de monitoreo</h2><p>Última medición disponible por punto.</p></div><button id="toggle-cml-form" class="button button-secondary">＋ Añadir CML/TML</button></div><div id="cml-list" class="cml-list"></div>
+            <form id="cml-form" class="form-grid inline-form" hidden>
+              <label>ID del punto<input id="cml-id" required maxlength="30"></label>
+              <label>Descripción<input id="cml-description" required maxlength="100"></label>
+              <label>Coordenada X (%)<input id="cml-x" type="number" min="0" max="100" step="any" value="50" required></label>
+              <label>Coordenada Y (%)<input id="cml-y" type="number" min="0" max="100" step="any" value="50" required></label>
+              <div class="span-2 form-actions"><button class="button button-primary" type="submit">Guardar punto</button></div>
+            </form>
+          </section>
+        </div>
+      </section>
+
+      <section id="view-measurements" class="view-section" hidden>
+        <div class="page-heading"><div><p class="eyebrow">TENDENCIA DE ESPESOR</p><h1 class="page-title"><svg class="view-symbol icon-measurements" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 4v16.5H21"/><path d="m6 15 4-4 3 2 6-7"/><circle cx="6" cy="15" r="1"/><circle cx="10" cy="11" r="1"/><circle cx="13" cy="13" r="1"/><circle cx="19" cy="6" r="1"/></svg><span>Mediciones y vida remanente</span></h1><p class="subheading">Corrosión, umbrales de alerta y próximo intervalo de inspección.</p></div><label class="compact-label">Punto CML/TML<select id="measurement-point"></select></label></div>
+        <div id="measurement-result" class="summary-grid"></div>
+        <div class="content-grid">
+          <section class="panel"><div class="panel-heading"><div><h2>Espesor vs. tiempo</h2><p>Historial, mínimo admisible y proyección lineal simplificada.</p></div></div><div id="thickness-chart" class="chart-container"></div></section>
+          <section class="panel"><div class="panel-heading"><div><h2>Historial UT</h2><p>Espesores y fechas reportados para el punto.</p></div></div><div id="measurement-history" class="table-wrap"></div>
+            <form id="measurement-form" class="form-grid inline-form">
+              <label>Fecha de campaña<input id="measurement-date" type="date" required></label>
+              <label>Espesor UT (mm)<input id="measurement-thickness" type="number" min="0" step="any" required></label>
+              <label class="span-2 checkbox-label"><input id="measurement-reset" type="checkbox"> Reiniciar línea base (cambio de punto, reparación o reemplazo)</label>
+              <div class="span-2 form-actions"><button class="button button-primary" type="submit">Registrar medición</button></div>
+            </form>
+          </section>
+        </div>
+        <section class="panel formula-panel"><div class="panel-heading"><div><h2>Ecuación y criterios aplicados</h2><p>Entradas, unidades, referencia y resultados del cálculo.</p></div></div><div id="calculation-details"></div></section>
+      </section>
+
+      <section id="view-rbi" class="view-section" hidden>
+        <div class="page-heading"><div><p class="eyebrow">CRIBADO DE RIESGO</p><h1 class="page-title"><svg class="view-symbol icon-rbi" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2.8 8 3v5.5c0 5.1-3.2 8.6-8 10.9-4.8-2.3-8-5.8-8-10.9V5.8z"/><path d="M8 8h2.5v2.5H8zm5.5 0H16v2.5h-2.5zM8 13.5h2.5V16H8zm5.5 0H16V16h-2.5z"/></svg><span>Evaluación RBI simplificada</span></h1><p class="subheading">Adelgazamiento generalizado: frecuencia y consecuencias por separado.</p></div><label class="compact-label">Equipo<select id="rbi-equipment"></select></label></div>
+        <div class="content-grid">
+          <section class="panel"><div class="panel-heading"><div><h2>Datos de entrada</h2><p>La frecuencia base y el factor de gestión son entradas del evaluador.</p></div></div>
+            <form id="rbi-form" class="form-grid">
+              <label>Edad en servicio (años)<input id="rbi-age" type="number" min="0" step="any" value="10"></label>
+              <label>Frecuencia genérica fF0 (1/año)<input id="rbi-base-frequency" type="number" min="0" step="any" value="0.00001"></label>
+              <label>Factor de gestión FMS<input id="rbi-management-factor" type="number" min="0" step="any" value="1"></label>
+              <label>Área de consecuencia CA (m²)<input id="rbi-area" type="number" min="0" step="any" value="10"></label>
+              <label>Moneda<select id="rbi-currency"><option value="USD">USD</option><option value="CLP">CLP</option></select></label>
+              <label>Consecuencia económica CE<input id="rbi-economic" type="number" min="0" step="any" value="100000"></label>
+              <div class="span-2 form-actions"><button class="button button-primary" type="submit">Calcular riesgo</button></div>
+            </form>
+            <div class="standard-note">Cribado educativo. Los escalones de Df son una convención ilustrativa, no una curva oficial API 581. Matriz: fF niveles 1–5 con límites 10⁻⁶, 10⁻⁵, 10⁻⁴ y 10⁻³/año; CA niveles 1–5 por área ≤1, ≤10, ≤100, ≤1000 y >1000 m². Prioridad por producto de niveles: 1–4 baja, 5–9 moderada, 10–16 alta, 17–25 muy alta.</div>
+          </section>
+          <section class="panel"><div class="panel-heading"><div><h2>Matriz de riesgo 5 × 5</h2><p>La posición usa frecuencia de falla y categoría de área de consecuencia.</p></div></div><div id="risk-matrix" class="chart-container"></div><div id="rbi-result" class="rbi-result"></div></section>
+        </div>
+      </section>
+
+      <section id="view-project" class="view-section" hidden>
+        <div class="page-heading"><div><p class="eyebrow">PORTABILIDAD DE DATOS</p><h1>Gestión del proyecto</h1><p class="subheading">Respalde o restaure el archivo JSON guardado en este navegador.</p></div></div>
+        <section class="panel project-panel"><div class="project-icon">⇄</div><div><h2>Respaldo local</h2><p>Los datos no salen del navegador. La exportación JSON permite mover el proyecto entre dispositivos.</p><div class="button-row"><button id="export-data" class="button button-primary">Exportar JSON</button><label class="button button-secondary file-button">Importar JSON<input id="import-data" type="file" accept="application/json,.json" hidden></label><button id="reset-data" class="button button-danger-outline">Restablecer datos demo</button></div></div></section>
+        <section class="panel warning-panel"><h2>Alcance y responsabilidad</h2><p>Esta herramienta estática no sustituye una evaluación de ingeniería, un plan de inspección aprobado, el juicio de un inspector autorizado ni el texto vigente de ASME/API. Confirme los criterios aplicables, las propiedades del material, los casos de carga, las unidades y los requisitos jurisdiccionales. El almacenamiento local puede borrarse al limpiar los datos del navegador.</p></section>
+      </section>
+      <footer class="footer">INTEGRA · Aplicación estática · Cálculos demostrativos, sujetos a validación de ingeniería</footer>
+    </main>
+  </div>
+
+  <script type="py" src="./app.py" config="./pyscript.json"></script>
+</body>
+</html>

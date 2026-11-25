@@ -1,0 +1,7 @@
+{
+  "packages": ["numpy", "pandas", "matplotlib"],
+  "interpreter": "https://cdn.jsdelivr.net/pyodide/v0.26.0/full/pyodide.mjs",
+  "files": {
+    "./calculos.py": "./calculos.py"
+  }
+}

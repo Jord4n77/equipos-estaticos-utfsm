@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "project": "Demostración de integridad mecánica",
+  "equipment": [
+    {
+      "id": "LINE-100",
+      "name": "Línea de proceso 4 in",
+      "family": "pipe",
+      "location": "Área de proceso / Rack R-01",
+      "material_specification": "ASTM A106 Gr. B",
+      "design_pressure_mpa": 1.6,
+      "outside_diameter_mm": 114.3,
+      "allowable_stress_mpa": 138,
+      "weld_efficiency": 0.85,
+      "weld_strength_reduction": 1,
+      "coefficient_y": 0.4,
+      "nominal_thickness_mm": 6.02,
+      "mill_tolerance_fraction": 0.125,
+      "corrosion_allowance_mm": 1.5,
+      "inspection_class_max_years": 5,
+      "schematic_id": "pipe",
+      "cmls": [
+        {"id": "CML-01", "description": "Tramo 1 aguas arriba, 6 h", "x": 27, "y": 50, "measurements": [{"date": "2020-03-10", "thickness_mm": 4.9}, {"date": "2023-03-10", "thickness_mm": 4.55}, {"date": "2026-03-10", "thickness_mm": 4.2}]},
+        {"id": "CML-02", "description": "Tramo recto junto a válvula V-101", "x": 51, "y": 50, "measurements": [{"date": "2020-03-10", "thickness_mm": 5.4}, {"date": "2023-03-10", "thickness_mm": 5.25}, {"date": "2026-03-10", "thickness_mm": 5.1}]},
+        {"id": "CML-03", "description": "Cercano a soporte", "x": 75, "y": 50, "measurements": [{"date": "2020-03-10", "thickness_mm": 4.8}, {"date": "2023-03-10", "thickness_mm": 4.55}, {"date": "2026-03-10", "thickness_mm": 4.3}]}
+      ]
+    },
+    {
+      "id": "VES-210",
+      "name": "Separador de alimentación",
+      "family": "vessel",
+      "location": "Área de proceso / Tren A",
+      "material_specification": "ASME SA-516 Gr. 70",
+      "design_pressure_mpa": 1.8,
+      "inside_radius_mm": 750,
+      "allowable_stress_mpa": 138,
+      "weld_efficiency": 0.85,
+      "nominal_thickness_mm": 16,
+      "mill_tolerance_fraction": 0,
+      "corrosion_allowance_mm": 3,
+      "schematic_id": "vessel",
+      "cmls": [
+        {"id": "CML-11", "description": "Cabezal elipsoidal superior, extremo norte", "x": 25, "y": 38, "measurements": [{"date": "2020-05-15", "thickness_mm": 15}, {"date": "2023-05-15", "thickness_mm": 14.75}, {"date": "2026-05-15", "thickness_mm": 14.5}]},
+        {"id": "CML-12", "description": "Envolvente cilíndrica, zona media", "x": 51, "y": 50, "measurements": [{"date": "2020-05-15", "thickness_mm": 14.8}, {"date": "2023-05-15", "thickness_mm": 13.9}, {"date": "2026-05-15", "thickness_mm": 11.9}]},
+        {"id": "CML-13", "description": "Zona inferior junto a boquilla de drenaje", "x": 75, "y": 63, "measurements": [{"date": "2020-05-15", "thickness_mm": 15.2}, {"date": "2023-05-15", "thickness_mm": 15.1}, {"date": "2026-05-15", "thickness_mm": 15}]}
+      ]
+    },
+    {
+      "id": "TK-305",
+      "name": "Tanque de almacenamiento TK-305",
+      "family": "tank",
+      "location": "Parque de tanques / Cubeto 3",
+      "material_specification": "ASTM A36",
+      "design_pressure_mpa": 0,
+      "tank_diameter_m": 24,
+      "liquid_height_m": 12,
+      "specific_gravity": 0.85,
+      "allowable_stress_mpa": 160,
+      "nominal_thickness_mm": 10,
+      "mill_tolerance_fraction": 0,
+      "corrosion_allowance_mm": 0,
+      "schematic_id": "tank",
+      "cmls": [
+        {"id": "CML-21", "description": "Manto, virola 1 inferior", "x": 29, "y": 74, "measurements": [{"date": "2020-08-20", "thickness_mm": 8.8}, {"date": "2023-08-20", "thickness_mm": 8.25}, {"date": "2026-08-20", "thickness_mm": 7.7}]},
+        {"id": "CML-22", "description": "Manto, virola 2", "x": 51, "y": 64, "measurements": [{"date": "2020-08-20", "thickness_mm": 9.2}, {"date": "2023-08-20", "thickness_mm": 9}, {"date": "2026-08-20", "thickness_mm": 8.8}]},
+        {"id": "CML-23", "description": "Manto, virola 3", "x": 73, "y": 50, "measurements": [{"date": "2020-08-20", "thickness_mm": 8.5}, {"date": "2023-08-20", "thickness_mm": 7.5}, {"date": "2026-08-20", "thickness_mm": 6.6}]}
+      ]
+    }
+  ],
+  "rbi": {
+    "equipment_id": "VES-210",
+    "service_age_years": 12,
+    "base_failure_frequency_per_year": 0.00001,
+    "management_factor": 1.2,
+    "consequence_area_m2": 25,
+    "economic_consequence": 250000,
+    "currency": "USD"
+  }
+}

@@ -537,3 +537,85 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 @media (max-width: 460px) {
   .cml-point-info { padding-inline: 2px; }
 }
+
+body {
+  background-color: #050912;
+  background-image:
+    radial-gradient(ellipse at 12% 8%, rgba(14, 165, 233, 0.08), transparent 34%),
+    radial-gradient(ellipse at 88% 92%, rgba(245, 158, 11, 0.05), transparent 32%),
+    linear-gradient(to right, rgba(56, 189, 248, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(56, 189, 248, 0.05) 1px, transparent 1px),
+    linear-gradient(to right, rgba(148, 163, 184, 0.025) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(148, 163, 184, 0.025) 1px, transparent 1px),
+    url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%201200%20760'%20fill='none'%20stroke='rgba%2856%2C189%2C248%2C0.065%29'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cg%20opacity='.9'%3E%3Cpath%20d='M168%20580V264c0-30%2044-54%2098-54s98%2024%2098%2054v316M168%20264c0%2030%2044%2054%2098%2054s98-24%2098-54M168%20264c0-30%2044-54%2098-54s98%2024%2098%2054M184%20580V264m164%200v316M266%20156v54m-22-54h44m-35-16h26M204%20580h124m-108%200v34m92-34v34m-108%200h124M120%20262h48m-48-12v24m-12-20v16m256-8h46m0-12v24m12-20v16M266%20318v262m-12-215h24m-12-12v24m-12-20v16M366%20262h78v86h-78m0-42h78m-50-44v86m-28-43h28m-8-8 8%208-8%208M422%20348v72h32m-32-24h24m-24%2012h24'/%3E%3Ccircle%20cx='266'%20cy='385'%20r='17'/%3E%3Cpath%20d='M266%20359v10m0%2032v10m-26-26h10m32%200h10M500%20580V322l112-64%20112%2064v258M500%20322h224M500%20408h224m-224%2086h224m-214-172v258m204-258v258M488%20580h248m-270%2018h292m-270-18v18m248-18v18M612%20258v-44h28v44m-34-44h40m-36-8h32m-28-8h24m-18%2020h12M560%20322v-34h24v34m-28-34h32m-200%20292h122m0-12v24m-108-24v24m792-196H882m0-24v48m-14-42v36m220-18H754m0-34v68m-16-58v48M760%20380h300m-300%2034h300m-300%2034h300m-300%2034h300m-300%2034h300m-300-136v170m300-170v170m-318%200h336m-304%200v18m272-18v18m-300%2018h328m-170-188v-38h34v38m-40-38h46m-40-8h34m-34%2016 17%2016%2017-16m-17%2016v28m-38-4h76M806%20380l42-24m0%2024-42-24m42%2024v34m-62-8h42m-42-10h42M818%20434v68m20-68v68m-28-68h36m-36%2068h36m-32%208h28'/%3E%3Ccircle%20cx='858'%20cy='380'%20r='11'/%3E%3Cpath%20d='M858%20363v6m0%2022v6m-17-17h6m22%200h6M950%20360v-44h32v44m-38-44h44m-38-8h32m-28-8h24M965%20316v-30h24v30m-30-30h36m-32-8h28M764%20354h46m-46-12v24m-12-20v16m316%2024h42m-42-12v24m-12-20v16'/%3E%3Cpath%20d='M840%20468h142m-142-10v20m142-20v20'/%3E%3Cpath%20d='M808%20528h170m-170-10v20m170-20v20M900%20528v48m-24-48v28h48v-28'/%3E%3C/g%3E%3Cg%20fill='rgba%2856%2C189%2C248%2C0.065%29'%20stroke='none'%20font-family='Arial,sans-serif'%20font-size='13'%20letter-spacing='2'%3E%3Ctext%20x='145'%20y='112'%3E01%20/%20PRESSURE%20VESSEL%3C/text%3E%3Ctext%20x='500'%20y='112'%3E02%20/%20ATMOSPHERIC%20TANK%3C/text%3E%3Ctext%20x='790'%20y='112'%3E03%20/%20PROCESS%20PIPING%3C/text%3E%3Ctext%20x='212'%20y='628'%3ECML%3C/text%3E%3Ctext%20x='280'%20y='436'%3Et_min%3C/text%3E%3Ctext%20x='788'%20y='550'%3ECML-01%3C/text%3E%3Ctext%20x='968'%20y='548'%3Et_min%3C/text%3E%3C/g%3E%3C/svg%3E"),
+    radial-gradient(ellipse at center, #08101e 0%, #050912 100%);
+  background-size:
+    auto,
+    auto,
+    100px 100px,
+    100px 100px,
+    20px 20px,
+    20px 20px,
+    min(1200px, 100vw) auto,
+    cover;
+  background-position:
+    center,
+    center,
+    0 0,
+    0 0,
+    0 0,
+    0 0,
+    center 8vh,
+    center;
+  background-repeat:
+    no-repeat,
+    no-repeat,
+    repeat,
+    repeat,
+    repeat,
+    repeat,
+    no-repeat,
+    no-repeat;
+  background-attachment: fixed;
+}
+
+.topbar,
+.sidebar,
+.panel,
+.card,
+.filter-row,
+.metric-card,
+.project-panel,
+.trace-card,
+.rbi-value,
+.cml-item {
+  background-color: rgba(10, 17, 30, 0.84);
+  border: 1px solid rgba(56, 189, 248, 0.18);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.table-wrap {
+  background: rgba(10, 17, 30, 0.84);
+  border: 1px solid rgba(56, 189, 248, 0.18);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+table { background-color: rgba(10, 17, 30, 0.84); }
+thead { background-color: rgba(10, 17, 30, 0.94); }
+tbody { background-color: rgba(10, 17, 30, 0.84); }
+input,
+select {
+  background-color: rgba(13, 21, 36, 0.96);
+  border-color: rgba(148, 163, 184, 0.38);
+}
+
+body {
+  background-color: #060c18;
+  background-image:
+    linear-gradient(180deg, rgba(6, 12, 24, 0.68) 0%, rgba(6, 12, 24, 0.78) 100%),
+    url('./fondo-planta.jpg');
+  background-size: cover;
+  background-position: center center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}

@@ -470,3 +470,70 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .schematic-upload, .schematic-generated { min-height: 40px; }
   .marker-label { font-size: 10px; }
 }
+
+.cml-item {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding: 12px 14px;
+  border-color: #334155;
+  background: #111827;
+}
+.cml-point-info {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  padding: 3px 5px;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+.cml-point-info:hover .cml-point-copy strong { color: #67e8f9; }
+.cml-point-copy { display: block; width: 100%; min-width: 0; overflow-wrap: break-word; }
+.cml-item strong { color: #f8fafc; font-size: 14px; }
+.cml-item small { color: #cbd5e1; font-size: 13px; }
+.cml-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  width: 92px;
+  flex-shrink: 0;
+}
+.cml-actions > .pill,
+.cml-actions .compact-action {
+  padding: 3px 8px;
+  font-size: 12px;
+  line-height: 1.2;
+  text-align: center;
+  justify-content: center;
+  border-radius: 6px;
+}
+.cml-actions .compact-action { min-height: 0; }
+.compact-action {
+  min-height: 32px;
+  padding: 4px 10px;
+  border: 1px solid #475569;
+  border-radius: 6px;
+  color: #bae6fd;
+  background: #1e293b;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+.compact-action:hover { border-color: #38bdf8; color: #f0f9ff; background: #153247; }
+.compact-action-delete {
+  border-color: #7f3848;
+  color: #fda4af;
+  background: #321d29;
+}
+.compact-action-delete:hover { border-color: #fb7185; color: #fff1f2; background: #4a1f2c; }
+@media (max-width: 460px) {
+  .cml-point-info { padding-inline: 2px; }
+}

@@ -561,9 +561,15 @@ def render_schematic():
             f'<span class="marker-label">{q(point["id"])}</span></button>'
         )
         listings.append(
-            f'<button class="cml-item cml-button" data-point="{q(equipment["id"])}::{q(point["id"])}">'
-            f'<span><strong>{q(point["id"])} · {q(point.get("description", ""))}</strong>'
-            f'<small>{q(thickness)} mm · CR gob. {cr_text} mm/año</small></span>{status_info}</button>'
+            f'<div class="cml-item">'
+            f'<button type="button" class="cml-point-info" data-point="{q(equipment["id"])}::{q(point["id"])}">'
+            f'<span class="cml-point-copy"><strong>{q(point["id"])} · {q(point.get("description", ""))}</strong>'
+            f'<small>{q(thickness)} mm · CR gob. {cr_text} mm/año</small></span></button>'
+            '<div class="cml-actions">'
+            f'{status_info}'
+            f'<button type="button" class="compact-action" data-edit-cml="{q(equipment["id"])}::{q(point["id"])}">Editar</button>'
+            f'<button type="button" class="compact-action compact-action-delete" data-delete-cml="{q(equipment["id"])}::{q(point["id"])}">Eliminar</button>'
+            '</div></div>'
         )
     title_suffix = " · Imagen propia" if equipment.get("schematic_image_data") else ""
     document.querySelector("#schematic-title").textContent = f"Esquema · {equipment['name']}{title_suffix}"
@@ -751,11 +757,13 @@ def render_measurement():
     render_chart(equipment, point, base["t_min_mm"], corrosion)
     history_rows = "".join(
         f'<tr><td>{q(item["date"])}</td><td>{number(item["thickness_mm"], 3)} mm</td>'
-        f'<td>{"Sí" if item.get("reset_baseline") else "No"}</td></tr>'
-        for item in point["measurements"]
+        f'<td>{"Sí" if item.get("reset_baseline") else "No"}</td>'
+        f'<td><button type="button" class="compact-action compact-action-delete" '
+        f'data-delete-measurement="{index}">Eliminar</button></td></tr>'
+        for index, item in enumerate(point["measurements"])
     )
     document.querySelector("#measurement-history").innerHTML = (
-        "<table><thead><tr><th>Fecha</th><th>Espesor</th><th>Reinicio de línea base</th></tr></thead>"
+        "<table><thead><tr><th>Fecha</th><th>Espesor</th><th>Reinicio de línea base</th><th>Acción</th></tr></thead>"
         f"<tbody>{history_rows}</tbody></table>"
     )
     current = point["measurements"][-1]["thickness_mm"]
@@ -969,7 +977,8 @@ def bind_events():
     listen("#equipment-select", "change", on_equipment_select)
     listen("#new-equipment", "click", start_new_equipment)
     listen("#equipment-form", "submit", on_save_equipment)
-    listen("#cml-list", "click", on_point_click)
+    listen("#cml-list", "click", on_cml_list_click)
+    listen("#measurement-history", "click", on_measurement_history_click)
     listen("#schematic-canvas", "click", on_point_click)
     listen("#schematic-image-upload", "change", on_schematic_image_upload)
     listen("#schematic-generated", "click", show_generated_schematic)
@@ -1013,7 +1022,75 @@ def on_point_click(event):
 
 def toggle_cml_form(event):
     form = document.querySelector("#cml-form")
+    if form.getAttribute("data-editing-id") is not None:
+        reset_cml_form(form)
+        form.hidden = False
+        return
     form.hidden = not form.hidden
+
+
+def reset_cml_form(form):
+    form.reset()
+    form.removeAttribute("data-editing-id")
+    form.querySelector('button[type="submit"]').textContent = "Guardar punto"
+    document.querySelector("#toggle-cml-form").textContent = "＋ Añadir CML/TML"
+
+
+def on_cml_list_click(event):
+    delete_button = event.target.closest("[data-delete-cml]")
+    if delete_button:
+        delete_cml_point(delete_button.getAttribute("data-delete-cml"))
+        return
+
+    edit_button = event.target.closest("[data-edit-cml]")
+    if edit_button:
+        edit_cml_point(edit_button.getAttribute("data-edit-cml"))
+        return
+
+    on_point_click(event)
+
+
+def edit_cml_point(point_key):
+    equipment_id, point_id = point_key.split("::", 1)
+    equipment = equipment_by_id(equipment_id)
+    point = point_by_id(equipment, point_id) if equipment else None
+    if equipment is None or point is None:
+        show_message("No se encontró el punto CML/TML que desea editar.", error=True)
+        return
+
+    document.querySelector("#schematic-equipment").value = equipment_id
+    document.querySelector("#cml-id").value = point["id"]
+    document.querySelector("#cml-description").value = point.get("description", "")
+    document.querySelector("#cml-x").value = point.get("x", 50)
+    document.querySelector("#cml-y").value = point.get("y", 50)
+    form = document.querySelector("#cml-form")
+    form.setAttribute("data-editing-id", point["id"])
+    form.querySelector('button[type="submit"]').textContent = "Guardar cambios"
+    document.querySelector("#toggle-cml-form").textContent = "＋ Añadir CML/TML"
+    form.hidden = False
+
+
+def delete_cml_point(point_key):
+    equipment_id, point_id = point_key.split("::", 1)
+    equipment = equipment_by_id(equipment_id)
+    point = point_by_id(equipment, point_id) if equipment else None
+    if equipment is None or point is None:
+        show_message("No se encontró el punto CML/TML que desea eliminar.", error=True)
+        return
+
+    equipment["cmls"].remove(point)
+    save_data()
+    render_all_selects()
+    document.querySelector("#schematic-equipment").value = equipment_id
+    render_schematic()
+    render_dashboard()
+    render_measurement()
+    render_rbi()
+    form = document.querySelector("#cml-form")
+    if form.getAttribute("data-editing-id") == point_id:
+        reset_cml_form(form)
+        form.hidden = True
+    show_message(f"Punto CML/TML {point_id} eliminado.")
 
 
 def on_save_cml(event):
@@ -1022,8 +1099,16 @@ def on_save_cml(event):
     if equipment is None:
         show_message("Seleccione un equipo antes de agregar un punto.", error=True)
         return
+    form = document.querySelector("#cml-form")
+    editing_id = form.getAttribute("data-editing-id")
     point_id = document.querySelector("#cml-id").value.strip()
-    if any(point["id"] == point_id for point in equipment.get("cmls", [])):
+    if not point_id:
+        show_message("El ID del punto CML/TML no puede estar vacío.", error=True)
+        return
+    if any(
+        point["id"] == point_id and point["id"] != editing_id
+        for point in equipment.get("cmls", [])
+    ):
         show_message(f"El punto {point_id} ya existe en este equipo.", error=True)
         return
     try:
@@ -1034,20 +1119,72 @@ def on_save_cml(event):
     except ValueError as exc:
         show_message(f"Coordenadas inválidas: {exc}", error=True)
         return
-    equipment.setdefault("cmls", []).append({
-        "id": point_id,
-        "description": document.querySelector("#cml-description").value.strip(),
-        "x": x,
-        "y": y,
-        "measurements": [],
-    })
+    description = document.querySelector("#cml-description").value.strip()
+    if editing_id is not None:
+        point = point_by_id(equipment, editing_id)
+        if point is None:
+            show_message(f"No se encontró el punto CML/TML {editing_id} para guardar los cambios.", error=True)
+            return
+        selected_measurement = document.querySelector("#measurement-point").value
+        point["id"] = point_id
+        point["description"] = description
+        point["x"] = x
+        point["y"] = y
+        if selected_measurement == f"{equipment['id']}::{editing_id}":
+            document.querySelector("#measurement-point").value = f"{equipment['id']}::{point_id}"
+    else:
+        equipment.setdefault("cmls", []).append({
+            "id": point_id,
+            "description": description,
+            "x": x,
+            "y": y,
+            "measurements": [],
+        })
     save_data()
-    document.querySelector("#cml-form").reset()
-    document.querySelector("#cml-form").hidden = True
+    reset_cml_form(form)
+    form.hidden = True
     render_all_selects()
     document.querySelector("#schematic-equipment").value = equipment["id"]
     render_schematic()
-    show_message(f"Punto {point_id} agregado. Registre sus campañas UT en Mediciones.")
+    if editing_id is not None:
+        render_dashboard()
+        render_measurement()
+        render_rbi()
+        show_message(f"Punto CML/TML {point_id} actualizado.")
+    else:
+        show_message(f"Punto {point_id} agregado. Registre sus campañas UT en Mediciones.")
+
+
+def on_measurement_history_click(event):
+    delete_button = event.target.closest("[data-delete-measurement]")
+    if delete_button is None:
+        return
+
+    try:
+        measurement_index = int(delete_button.getAttribute("data-delete-measurement"))
+    except (TypeError, ValueError):
+        show_message("El índice de la medición seleccionada no es válido.", error=True)
+        return
+
+    value = document.querySelector("#measurement-point").value
+    if not value:
+        show_message("Seleccione un punto CML/TML antes de eliminar una medición.", error=True)
+        return
+    equipment_id, point_id = value.split("::", 1)
+    equipment = equipment_by_id(equipment_id)
+    point = point_by_id(equipment, point_id) if equipment else None
+    measurements = point.get("measurements", []) if point else []
+    if equipment is None or point is None or not 0 <= measurement_index < len(measurements):
+        show_message("La medición seleccionada ya no existe.", error=True)
+        return
+
+    removed = measurements.pop(measurement_index)
+    save_data()
+    render_measurement()
+    render_dashboard()
+    render_schematic()
+    render_rbi()
+    show_message(f"Medición del {removed['date']} eliminada del punto {point_id}.")
 
 
 def on_save_measurement(event):
